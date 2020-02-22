@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+    <category label="Аккаунт">
+        <setting id="username" label="Логин" type="text" default=""/>
+        <setting id="password" label="Пароль" type="text" option="hidden" enable="!eq(-1,)" default=""/>
+    </category>
+    <category label="Общие">
+        <setting id="search_history_status" label="История поиска" type="bool" default="true"/>
+
+        <setting id="_search_history" label="internal_search_history" type="text" visible="false"/>
+        <setting id="_cookie" label="internal_cookie" type="text" visible="false"/>
+        <setting id="_last_check" label="internal_last_check" type="number" visible="false"/>
+        <setting id="_user_id" label="internal_user_id" type="number" visible="false"/>
+    </category>
+</settings>
