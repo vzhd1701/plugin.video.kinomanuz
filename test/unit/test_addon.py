@@ -287,15 +287,16 @@ class TestAddonMenus(unittest.TestCase):
     @mock.patch("addon.kinoman_api")
     @mock.patch("addon.player", new_callable=FakePlayer)
     def test_play(self, mock_player, mock_kinoman):
-        url_encoded = "https://test.com/base64_string"
         url_actual_video = "https://test.com/actual_video.mp4"
+
+        test_args = [100, "online", "video.mp4"]
 
         mock_player.play = mock.MagicMock()
         mock_kinoman.get_video_url.return_value = url_actual_video
 
-        addon.play(url_encoded)
+        addon.play(*test_args)
 
-        mock_kinoman.get_video_url.assert_called_once_with(url_encoded)
+        mock_kinoman.get_video_url.assert_called_once_with(*test_args)
         mock_player.play.assert_called_once_with(url_actual_video)
 
     @mock.patch("addon.resolve")
@@ -361,8 +362,22 @@ class TestOpenMovie(unittest.TestCase):
         }
 
         test_files_list = [
-            ["Воспроизвести (стрим)", "https://test.com/video1", None, None],
-            ["Воспроизвести (SD)", "https://test.com/video2", None, "Video type info"],
+            [
+                "online",
+                "video1_online.mp4",
+                "Воспроизвести (стрим)",
+                "https://test.com/video1",
+                None,
+                None,
+            ],
+            [
+                "sd",
+                "video1.mkv",
+                "Воспроизвести (SD)",
+                "https://test.com/video2",
+                None,
+                "Video type info",
+            ],
         ]
 
         mock_player.print_items = mock.MagicMock()
@@ -373,14 +388,26 @@ class TestOpenMovie(unittest.TestCase):
 
         expected_result = [
             {
-                "path": ("play", None, {"url": "https://test.com/video1"}),
+                "path": (
+                    "play",
+                    None,
+                    {
+                        "video_id": 1000,
+                        "video_type": "online",
+                        "video_name": "video1_online.mp4",
+                    },
+                ),
                 "video_data": {"info": {"plot": "Test description"}},
                 "is_folder": False,
                 "is_playable": True,
                 "label": "Воспроизвести (стрим)",
             },
             {
-                "path": ("play", None, {"url": "https://test.com/video2"}),
+                "path": (
+                    "play",
+                    None,
+                    {"video_id": 1000, "video_type": "sd", "video_name": "video1.mkv"},
+                ),
                 "video_data": {
                     "info": {"plot": "[B]Video type info[/B][CR][CR]Test description"}
                 },
@@ -409,8 +436,8 @@ class TestOpenMovie(unittest.TestCase):
         }
 
         test_files_list = [
-            ["Смотреть серии (стрим)", "online", None, None],
-            ["Смотреть серии (SD)", "sd", None, None],
+            ["dir", None, "Смотреть серии (стрим)", "online", None, None],
+            ["dir", None, "Смотреть серии (SD)", "sd", None, None],
         ]
 
         mock_player.print_items = mock.MagicMock()
@@ -456,18 +483,24 @@ class TestOpenMovie(unittest.TestCase):
 
         test_files_list = [
             [
+                "online",
+                "o_test_series_s01e01.mp4",
                 "o_test_series_s01e01.mp4",
                 "https://www.kinoman.uz/api/v1/movie/online/secure_id1_base64",
                 {"season": 1, "episode": 1, "title": "Test Series S01E01"},
                 None,
             ],
             [
+                "online",
+                "o_test_series_s01e02.mp4",
                 "o_test_series_s01e02.mp4",
                 "https://www.kinoman.uz/api/v1/movie/online/secure_id2_base64",
                 {"season": 1, "episode": 2, "title": "Test Series S01E02"},
                 None,
             ],
             [
+                "online",
+                "o_test_series_s01e03.mp4",
                 "o_test_series_s01e03.mp4",
                 "https://www.kinoman.uz/api/v1/movie/online/secure_id3_base64",
                 {"season": 1, "episode": 3, "title": "Test Series S01E03"},
@@ -487,8 +520,9 @@ class TestOpenMovie(unittest.TestCase):
                     "play",
                     None,
                     {
-                        "url": "https://www.kinoman.uz/api/v1/movie/online/"
-                        "secure_id1_base64"
+                        "video_id": 1000,
+                        "video_type": "online",
+                        "video_name": "o_test_series_s01e01.mp4",
                     },
                 ),
                 "video_data": {
@@ -508,8 +542,9 @@ class TestOpenMovie(unittest.TestCase):
                     "play",
                     None,
                     {
-                        "url": "https://www.kinoman.uz/api/v1/movie/online/"
-                        "secure_id2_base64"
+                        "video_id": 1000,
+                        "video_type": "online",
+                        "video_name": "o_test_series_s01e02.mp4",
                     },
                 ),
                 "video_data": {
@@ -529,8 +564,9 @@ class TestOpenMovie(unittest.TestCase):
                     "play",
                     None,
                     {
-                        "url": "https://www.kinoman.uz/api/v1/movie/online/"
-                        "secure_id3_base64"
+                        "video_id": 1000,
+                        "video_type": "online",
+                        "video_name": "o_test_series_s01e03.mp4",
                     },
                 ),
                 "video_data": {

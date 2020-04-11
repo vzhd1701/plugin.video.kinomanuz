@@ -171,6 +171,8 @@ class TestKinomanAPIUpstream(unittest.TestCase):
                 " осложняется тем, что Элизабет похищают китайские пираты…</p>",
                 "age_rating": 12,
                 "kinopoisk_url": None,
+                "imdb_rating": 7.1,
+                "kp_rating": 8.014,
                 "countries": [{"id": 334, "title": "США"}],
                 "genres": [
                     {"id": 13, "title": "приключения"},
@@ -264,6 +266,8 @@ class TestKinomanAPIUpstream(unittest.TestCase):
                 " жеваных белых брюках и в черных тапочках.</p>",
                 "age_rating": 18,
                 "kinopoisk_url": None,
+                "imdb_rating": 7.5,
+                "kp_rating": 7.8,
                 "countries": [{"id": 337, "title": "Россия"}],
                 "genres": [
                     {"id": 5, "title": "триллер"},
@@ -476,8 +480,9 @@ class TestKinomanAPIUpstream(unittest.TestCase):
                 for i, _ in enumerate(data["movie"][file_type]):
                     data["movie"][file_type][i]["secure_id"] = None
 
-        self.assertEqual(movie_data, movie_expected_result)
-        self.assertEqual(series_data, series_expected_result)
+        self.maxDiff = None
+        self.assertEqual(movie_expected_result, movie_data)
+        self.assertEqual(series_expected_result, series_data)
 
     def test_upstream_genres(self):
         genres_data = kinoman_api.get_page("https://www.kinoman.uz/api/v1/genre/all")

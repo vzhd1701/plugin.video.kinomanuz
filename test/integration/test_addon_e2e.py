@@ -221,7 +221,7 @@ class TestAddonPaths(unittest.TestCase):
         video_types = mock_print.call_args[0][0]
 
         for video in video_types:
-            self.assertRegexpMatches(video["path"], r"^/play/http.*$")
+            self.assertRegexpMatches(video["path"], r"^/play/73/.*$")
             self.assertRegexpMatches(video["label"], r"^Воспроизвести \(.*\)$")
 
             with mock.patch("sys.argv", ["plugin://test.plugin", "1", video["path"]]):
@@ -255,7 +255,9 @@ class TestAddonPaths(unittest.TestCase):
                 episodes_list = mock_print.call_args[0][0]
 
                 for e_video in [episodes_list[0], episodes_list[-1]]:
-                    self.assertRegexpMatches(e_video["path"], r"^/play/http.*$")
+                    self.assertRegexpMatches(
+                        e_video["path"], r"^/play/166/.*?$",
+                    )
 
                     with mock.patch(
                         "sys.argv", ["plugin://test.plugin", "1", e_video["path"]]

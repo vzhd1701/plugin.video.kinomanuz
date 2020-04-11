@@ -24,12 +24,28 @@ class TestMinorStuff(unittest.TestCase):
     def test_cleanhtml(self):
         self.assertEqual(kinoman_api._cleanhtml("<p>Some text</p>"), "Some text")
 
+    @mock.patch("resources.kinoman_api.get_movie_data")
     @mock.patch("resources.kinoman_api.get_page")
-    def test_get_video_url(self, mock_get_page):
+    def test_get_video_url(self, mock_get_page, mock_get_movie_data):
         mock_get_page.return_value = {"url": "http://test.com/test_url"}
+        mock_get_movie_data.return_value = {
+            "file_lists": {"online": [["video.mp4", "video_url"]]}
+        }
         self.assertEqual(
-            kinoman_api.get_video_url("fake path"), "http://test.com/test_url"
+            kinoman_api.get_video_url(100, "online", "video.mp4"),
+            "http://test.com/test_url",
         )
+
+    @mock.patch("resources.kinoman_api.get_movie_data")
+    @mock.patch("resources.kinoman_api.get_page")
+    def test_get_video_url_bad(self, mock_get_page, mock_get_movie_data):
+        mock_get_page.return_value = {"url": "http://test.com/test_url"}
+        mock_get_movie_data.return_value = {
+            "file_lists": {"online": [["video.mp4", "video_url"]]}
+        }
+
+        with self.assertRaises(kinoman_api.MissingVideoError):
+            kinoman_api.get_video_url(100, "online", "video1.mp4")
 
     def test_json_loads_byteified_dict(self):
         self.assertDictEqual(
@@ -711,24 +727,32 @@ class TestGetMovieData(unittest.TestCase):
     def test_get_movie_files_list_movie(self):
         expected_result = [
             [
+                "online",
+                "o_test_movie_2019.mp4",
                 "Воспроизвести (стрим)",
                 "https://www.kinoman.uz/api/v1/movie/online/secure_id1_base64",
                 None,
                 None,
             ],
             [
+                "sd",
+                "test_movie_2019.mkv",
                 "Воспроизвести (SD)",
                 "https://www.kinoman.uz/api/v1/movie/download/secure_id2_base64",
                 None,
                 "Видео: HDTVRIP (768x320)[CR]Аудио: профессиональное (многоголосое)",
             ],
             [
+                "hd",
+                "test_movie_2019_720p.mkv",
                 "Воспроизвести (HD)",
                 "https://www.kinoman.uz/api/v1/movie/download/secure_id3_base64",
                 None,
                 "Видео: HDTVRIP (1280x720)[CR]Аудио: профессиональное (многоголосое)",
             ],
             [
+                "full_hd",
+                "test_movie_2019_1080p_dub.mkv",
                 "Воспроизвести (Full HD)",
                 "https://www.kinoman.uz/api/v1/movie/download/secure_id4_base64",
                 None,
@@ -743,8 +767,8 @@ class TestGetMovieData(unittest.TestCase):
 
     def test_get_movie_files_list_series_menu(self):
         expected_result = [
-            ["Смотреть серии (стрим)", "online", None, None],
-            ["Смотреть серии (SD)", "sd", None, None],
+            ["dir", None, "Смотреть серии (стрим)", "online", None, None],
+            ["dir", None, "Смотреть серии (SD)", "sd", None, None],
         ]
 
         self.assertListEqual(
@@ -757,18 +781,24 @@ class TestGetMovieData(unittest.TestCase):
     def test_get_movie_files_list_series_category(self):
         expected_result = [
             [
+                "online",
+                "o_test_series_s01e01.mp4",
                 "o_test_series_s01e01.mp4",
                 "https://www.kinoman.uz/api/v1/movie/online/secure_id1_base64",
                 {"season": 1, "episode": 1, "title": "Test Series S01E01"},
                 None,
             ],
             [
+                "online",
+                "o_test_series_s01e02.mp4",
                 "o_test_series_s01e02.mp4",
                 "https://www.kinoman.uz/api/v1/movie/online/secure_id2_base64",
                 {"season": 1, "episode": 2, "title": "Test Series S01E02"},
                 None,
             ],
             [
+                "online",
+                "o_test_series_s01e03.mp4",
                 "o_test_series_s01e03.mp4",
                 "https://www.kinoman.uz/api/v1/movie/online/secure_id3_base64",
                 {"season": 1, "episode": 3, "title": "Test Series S01E03"},

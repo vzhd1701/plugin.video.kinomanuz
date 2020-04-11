@@ -198,12 +198,26 @@ def open_movie(video_id, video_dir=None):
         content_type = "movies"
 
     items = []
-
-    for title, url, series, file_info in kinoman_api.get_movie_files_list(
+    for (
+        video_type,
+        file_name,
+        title,
+        url,
+        series,
+        file_info,
+    ) in kinoman_api.get_movie_files_list(
         movie_data["file_lists"], video_dir, movie_data["series_season_n"]
     ):
+
         if url.startswith("http"):
-            url_play = path_for("play", path_vars={"url": url})
+            url_play = path_for(
+                "play",
+                path_vars={
+                    "video_id": video_id,
+                    "video_type": video_type,
+                    "video_name": file_name,
+                },
+            )
             is_playable = True
         else:
             url_play = path_for(
@@ -244,9 +258,9 @@ def open_movie(video_id, video_dir=None):
     return player.print_items(items, content_type=content_type)
 
 
-@route("/play/<url:url>")
-def play(url):
-    player.play(kinoman_api.get_video_url(url))
+@route("/play/<int:video_id>/<video_type>/<video_name>")
+def play(video_id, video_type, video_name):
+    player.play(kinoman_api.get_video_url(video_id, video_type, video_name))
 
 
 def main():

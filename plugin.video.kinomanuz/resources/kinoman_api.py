@@ -478,6 +478,8 @@ def get_movie_files_list(file_lists, video_category=None, season_n=None):
             for f_video_category in file_lists:
                 files.append(
                     [
+                        "dir",
+                        None,
                         "Смотреть серии ({})".format(category_names[f_video_category]),
                         f_video_category,
                         None,
@@ -489,12 +491,17 @@ def get_movie_files_list(file_lists, video_category=None, season_n=None):
             for f_video_category in file_lists:
                 # If it's only a single file, then replace the filename with
                 # tooltip according to format
+                file_name = None
                 if len(file_lists[f_video_category]) == 1:
+                    file_name = file_lists[f_video_category][0][0]
                     file_lists[f_video_category][0][0] = "Воспроизвести ({})".format(
                         category_names[f_video_category]
                     )
                 for video_file in file_lists[f_video_category]:
-                    files.append(video_file)
+                    files.append(
+                        [f_video_category, file_name if file_name else video_file[0]]
+                        + video_file
+                    )
 
     # Video format category listing
     else:
@@ -502,12 +509,22 @@ def get_movie_files_list(file_lists, video_category=None, season_n=None):
             raise MissingVideoError()
 
         for video_file in file_lists[video_category]:
-            files.append(video_file)
+            files.append([video_category, video_file[0]] + video_file)
 
     return files
 
 
-def get_video_url(path):
-    data = get_page(path)
+def get_video_url(video_id, video_type, video_name):
+    movie = get_movie_data(video_id)
+
+    # TODO make this look good
+    try:
+        video_url = next(
+            v[1] for v in movie["file_lists"][video_type] if v[0] == video_name
+        )
+    except (StopIteration, IndexError):
+        raise MissingVideoError
+
+    data = get_page(video_url)
 
     return data["url"]
