@@ -10,7 +10,7 @@ before_install:
   - travis_retry curl -LSs -o codacy-coverage-reporter-assembly.jar "$(curl -LSs https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r '.assets | map({name, browser_download_url} | select(.name | endswith(".jar"))) | .[0].browser_download_url')"
 install: pip install codecov mock future Kodistubs requests
 script:
-  - echo -e "[ProxyList]\nsocks5 $TIX_PROXY_HOST $TIX_PROXY_CONF" >tix.conf
+  - echo -e "tcp_read_time_out 15000\ntcp_connect_time_out 10000\n[ProxyList]\nsocks5 $TIX_PROXY_HOST $TIX_PROXY_CONF" >tix.conf
   - proxychains4 -q -f tix.conf coverage run -m unittest discover
 after_success:
   - codecov
