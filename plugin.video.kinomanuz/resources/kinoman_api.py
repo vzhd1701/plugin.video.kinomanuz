@@ -133,8 +133,8 @@ def _kinoman_login(session):
         page = session.post(
             "https://www.kinoman.uz/api/v1/user/login", json=login_data, verify=False
         )
-    except (requests.ConnectionError, requests.Timeout) as e:
-        raise NetworkError from e
+    except (requests.ConnectionError, requests.Timeout):
+        raise NetworkError
 
     response = _kinoman_login_check(page)
 

@@ -1,6 +1,5 @@
 # plugin.video.kinomanuz
 
-[![Build Status](https://travis-ci.com/vzhd1701/plugin.video.kinomanuz.svg?branch=master)](https://travis-ci.com/vzhd1701/plugin.video.kinomanuz)
 [![codecov](https://codecov.io/gh/vzhd1701/plugin.video.kinomanuz/branch/master/graph/badge.svg)](https://codecov.io/gh/vzhd1701/plugin.video.kinomanuz)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/5e86e000e725470cb9fdcc0f215fd087)](https://www.codacy.com/manual/vzhd1701/plugin.video.kinomanuz?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=vzhd1701/plugin.video.kinomanuz&amp;utm_campaign=Badge_Grade)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
